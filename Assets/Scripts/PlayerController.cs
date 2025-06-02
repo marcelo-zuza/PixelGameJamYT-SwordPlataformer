@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -9,7 +10,8 @@ public class PlayerController : MonoBehaviour
     Animator playerAnimator;
     public Transform groundCheck;
     // Colliders
-    [SerializeField] private GameObject attackPoint;
+    [SerializeField] private CapsuleCollider2D playerMainCollider;
+
         
     [SerializeField] private GameObject attackCollider;
     [SerializeField] private float attackCoolDown = 0.5f;
@@ -22,11 +24,13 @@ public class PlayerController : MonoBehaviour
     private bool isFacingRight = false;
     public bool isGrounded = true;
     public bool jump = false;
+    public bool isCrouching = false;
 
 
     void Start()
     {
         playerRigidBody = GetComponent<Rigidbody2D>();
+        playerMainCollider = GetComponent<CapsuleCollider2D>();
         playerAnimator = GetComponent<Animator>();
     }
 
@@ -54,7 +58,7 @@ public class PlayerController : MonoBehaviour
 
     void PlayerCommands()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetButtonUp("Jump"))
         {
             jump = true;
             playerAnimator.SetTrigger("jump");
@@ -69,6 +73,20 @@ public class PlayerController : MonoBehaviour
                 nextAttackTime = Time.time + attackCoolDown;
             }
         }
+
+        // if (Input.GetKeyDown(KeyCode.DownArrow))
+        // {
+        //     isCrouching = true;
+        //     playerAnimator.SetBool("isCrouching", isCrouching);
+        //     AjustColliderForCrouch(true);
+        // }
+
+        // if (Input.GetKeyUp(KeyCode.DownArrow))
+        // {
+        //     isCrouching = false;
+        //     playerAnimator.SetBool("isCrouching", isCrouching);
+        //     AjustColliderForCrouch(false);
+        // }
     }
 
 
@@ -99,6 +117,20 @@ public class PlayerController : MonoBehaviour
             playerRigidBody.AddForce(new Vector2(0f, jumpForce));
             isGrounded = false;
             jump = false;
+        }
+    }
+
+    void AjustColliderForCrouch(bool crouch)
+    {
+        if (crouch)
+        {
+            playerMainCollider.offset = new Vector2(playerMainCollider.offset.x, playerMainCollider.offset.y / 2);
+            playerMainCollider.size = new Vector2(playerMainCollider.size.x, playerMainCollider.size.y / 2);
+        }
+        else
+        {
+            playerMainCollider.offset = new Vector2(playerMainCollider.offset.x, playerMainCollider.offset.y * 2);
+            playerMainCollider.size = new Vector2(playerMainCollider.size.x, playerMainCollider.size.y * 2);
         }
     }
     
