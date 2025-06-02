@@ -8,7 +8,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private Transform[] enemyPosition;
     [SerializeField] private float enemySpeed = 5f;
     [SerializeField] private float arrivalThreshold = 0.1f;
-    private bool isFacingRight = false;
+    private bool isFacingRight = true;
     private int idTarget;
 
     void Start()
@@ -17,19 +17,33 @@ public class EnemyController : MonoBehaviour
         transform.position = enemyPosition[0].position;
         idTarget = 1;
 
+        CheckAndFlip();
+
     }
 
     void Update()
     {
         transform.position = Vector3.MoveTowards(transform.position, enemyPosition[idTarget].position, enemySpeed * Time.deltaTime);
-        if (gameObject.transform.position == enemyPosition[idTarget].position)
+        if (Vector3.Distance(transform.position, enemyPosition[idTarget].position) < arrivalThreshold)
         {
-            idTarget += 1;
-            if (idTarget == enemyPosition.Length)
-            {
-                idTarget = 0;
-            }
+            idTarget = (idTarget + 1) % enemyPosition.Length;
+            // if (idTarget == enemyPosition.Length)
+            // {
+            //     idTarget = 0;
+            // }
+            CheckAndFlip();
         }
+
+    }
+
+    void Flip()
+    {
+        isFacingRight = !isFacingRight;
+        enemySprite.flipX = !enemySprite.flipX;
+    }
+
+    void CheckAndFlip()
+    {
         if (enemyPosition[idTarget].position.x < transform.position.x && isFacingRight == true)
         {
             Flip();
@@ -38,11 +52,5 @@ public class EnemyController : MonoBehaviour
         {
             Flip();
         }
-    }
-
-    void Flip()
-    {
-        isFacingRight = !isFacingRight;
-        enemySprite.flipX = !enemySprite.flipX;
     }
 }
