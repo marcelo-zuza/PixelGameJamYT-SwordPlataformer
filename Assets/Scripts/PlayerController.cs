@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class PlayerController : MonoBehaviour
     Rigidbody2D playerRigidBody;
     Animator playerAnimator;
     public Transform groundCheck;
+    [SerializeField] SpriteRenderer playerSpriteRenderer;
     // Colliders
     [SerializeField] private CapsuleCollider2D playerMainCollider;
 
@@ -19,12 +21,14 @@ public class PlayerController : MonoBehaviour
     //Variables
     [SerializeField] float playerSpeed = 15f;
     [SerializeField] float jumpForce = 100f;
+    [SerializeField] public float playerLives = 3f;
     private float xAxis;
     // bools
     private bool isFacingRight = false;
     public bool isGrounded = true;
     public bool jump = false;
     public bool isCrouching = false;
+    [SerializeField] private bool playerInvulnerability = false;
 
 
     void Start()
@@ -32,6 +36,7 @@ public class PlayerController : MonoBehaviour
         playerRigidBody = GetComponent<Rigidbody2D>();
         playerMainCollider = GetComponent<CapsuleCollider2D>();
         playerAnimator = GetComponent<Animator>();
+        playerSpriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     void Update()
@@ -73,20 +78,6 @@ public class PlayerController : MonoBehaviour
                 nextAttackTime = Time.time + attackCoolDown;
             }
         }
-
-        // if (Input.GetKeyDown(KeyCode.DownArrow))
-        // {
-        //     isCrouching = true;
-        //     playerAnimator.SetBool("isCrouching", isCrouching);
-        //     AjustColliderForCrouch(true);
-        // }
-
-        // if (Input.GetKeyUp(KeyCode.DownArrow))
-        // {
-        //     isCrouching = false;
-        //     playerAnimator.SetBool("isCrouching", isCrouching);
-        //     AjustColliderForCrouch(false);
-        // }
     }
 
 
@@ -139,6 +130,47 @@ public class PlayerController : MonoBehaviour
         attackCollider.SetActive(true);
         yield return new WaitForSeconds(0.5f);
         attackCollider.SetActive(false);
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.tag == "Enemy")
+        {
+            if (playerInvulnerability == false)
+            {
+                if (playerLives > 0)
+                {
+                    StartCoroutine(PlayerDamage());
+                    playerLives -= 1;
+                }
+                else
+                {
+                    StartCoroutine(PlayerDeath());
+                }
+            }
+        }
+    }
+
+    IEnumerator PlayerDamage()
+    {
+        playerInvulnerability = true;
+        yield return new WaitForSeconds(0.2f);
+        for (float i = 0f; i < 1f; i += 0.1f)
+        {
+            playerSpriteRenderer.enabled = false;
+            yield return new WaitForSeconds(0.1f);
+            playerSpriteRenderer.enabled = true;
+            yield return new WaitForSeconds(0.1f);
+        }
+        playerInvulnerability = false;
+    }
+
+    IEnumerator PlayerDeath()
+    {
+        playerAnimator.SetTrigger("died");
+        yield return new WaitForSeconds(1f);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        playerLives = 3;
     }
     
     
