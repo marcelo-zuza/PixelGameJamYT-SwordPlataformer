@@ -8,12 +8,15 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private Transform[] enemyPosition;
     [SerializeField] private float enemySpeed = 5f;
     [SerializeField] private float arrivalThreshold = 0.1f;
+    [SerializeField] private float enemyLifePoints = 1f;
     private bool isFacingRight = true;
     private int idTarget;
+    private Animator enemyAnimator;
 
     void Start()
     {
         enemySprite = GetComponent<SpriteRenderer>();
+        enemyAnimator = GetComponent<Animator>();
         transform.position = enemyPosition[0].position;
         idTarget = 1;
 
@@ -27,10 +30,7 @@ public class EnemyController : MonoBehaviour
         if (Vector3.Distance(transform.position, enemyPosition[idTarget].position) < arrivalThreshold)
         {
             idTarget = (idTarget + 1) % enemyPosition.Length;
-            // if (idTarget == enemyPosition.Length)
-            // {
-            //     idTarget = 0;
-            // }
+
             CheckAndFlip();
         }
 
@@ -52,5 +52,20 @@ public class EnemyController : MonoBehaviour
         {
             Flip();
         }
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "HurtBox")
+        {  
+            StartCoroutine(DestroyEnemy());
+        }
+    }
+
+    IEnumerator DestroyEnemy()
+    {
+        enemyAnimator.SetTrigger("Death");
+        yield return new WaitForSeconds(0.6f);
+        Destroy(gameObject);
     }
 }

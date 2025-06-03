@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
     // Colliders
     [SerializeField] private CapsuleCollider2D playerMainCollider;
 
-        
+
     [SerializeField] private GameObject attackCollider;
     [SerializeField] private float attackCoolDown = 0.5f;
     private float nextAttackTime = 0f;
@@ -133,11 +133,13 @@ public class PlayerController : MonoBehaviour
             playerMainCollider.size = new Vector2(playerMainCollider.size.x, playerMainCollider.size.y * 2);
         }
     }
-    
+
     IEnumerator Attack()
     {
         attackCollider.SetActive(true);
         yield return new WaitForSeconds(0.5f);
         attackCollider.SetActive(false);
     }
+    
+    
 }
