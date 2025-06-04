@@ -105,6 +105,7 @@ public class PlayerController : MonoBehaviour
     {
         if (isGrounded)
         {
+            playerRigidBody.velocity = new Vector2(playerRigidBody.velocity.x, 0f);
             playerRigidBody.AddForce(new Vector2(0f, jumpForce));
             isGrounded = false;
             jump = false;
@@ -132,22 +133,36 @@ public class PlayerController : MonoBehaviour
         attackCollider.SetActive(false);
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+
+    void OnCollisionEnter2D(Collision2D collision)
     {
-        if (other.gameObject.tag == "Enemy")
+        if (collision.gameObject.CompareTag("Enemy"))
         {
-            if (playerInvulnerability == false)
+            if (collision.gameObject != gameObject && playerInvulnerability == false)
             {
                 if (playerLives > 0)
                 {
+                    playerAnimator.SetTrigger("hurt");
                     StartCoroutine(PlayerDamage());
                     playerLives -= 1;
+                    Vector2 knockbackDirection = (collision.transform.position - transform.position).normalized;
+                    playerRigidBody.AddForce(knockbackDirection * 10f, ForceMode2D.Impulse);
+
+                    
                 }
                 else
                 {
                     StartCoroutine(PlayerDeath());
                 }
             }
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "DeathZone")
+        {
+            StartCoroutine(PlayerDeath());
         }
     }
 

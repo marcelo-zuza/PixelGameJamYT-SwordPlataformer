@@ -6,6 +6,7 @@ TagManager:
   tags:
   - HurtBox
   - Enemy
+  - DeathZone
   layers:
   - Default
   - TransparentFX
@@ -13,9 +14,9 @@ TagManager:
   - Ground
   - Water
   - UI
-  - 
-  - 
-  - 
+  - HurtBox
+  - Enemy
+  - Player
   - 
   - 
   - 

@@ -16,7 +16,7 @@ public class CameraController : MonoBehaviour
     private float playerY;
     void Start()
     {
-        //player = GameObject.Find("Player").transform;
+        player = GameObject.Find("Player").transform;
         playerX = player.position.x;
         playerY = player.position.y;
     }
