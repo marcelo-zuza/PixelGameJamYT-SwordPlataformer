@@ -8,15 +8,18 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private Transform[] enemyPosition;
     [SerializeField] private float enemySpeed = 5f;
     [SerializeField] private float arrivalThreshold = 0.1f;
-    [SerializeField] private float enemyLifePoints = 1f;
+    [SerializeField] private AudioClip fxHurt;
+    [SerializeField] private AudioSource gameAudioSource;
     private bool isFacingRight = true;
     private int idTarget;
     private Animator enemyAnimator;
+    private CircleCollider2D enemyMainCollider;
 
     void Start()
     {
         enemySprite = GetComponent<SpriteRenderer>();
         enemyAnimator = GetComponent<Animator>();
+        enemyMainCollider = GetComponent<CircleCollider2D>();
         transform.position = enemyPosition[0].position;
         idTarget = 1;
 
@@ -65,6 +68,8 @@ public class EnemyController : MonoBehaviour
     IEnumerator DestroyEnemy()
     {
         enemyAnimator.SetTrigger("Death");
+        enemyMainCollider.enabled = false;
+        gameAudioSource.PlayOneShot(fxHurt);
         yield return new WaitForSeconds(0.6f);
         Destroy(gameObject);
     }

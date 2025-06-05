@@ -242,7 +242,7 @@ MonoBehaviour:
   - {fileID: 577264213186958023}
   enemySpeed: 5
   arrivalThreshold: 0.1
-  enemyLifePoints: 1
+  fxHurt: {fileID: 8300000, guid: 11088649d0da2caeb9f77887f3c9247a, type: 3}
 --- !u!50 &2531292547476946949
 Rigidbody2D:
   serializedVersion: 4

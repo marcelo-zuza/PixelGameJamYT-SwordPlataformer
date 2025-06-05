@@ -13,6 +13,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] SpriteRenderer playerSpriteRenderer;
     // Colliders
     [SerializeField] private CapsuleCollider2D playerMainCollider;
+    [SerializeField] private AudioSource gameAudioSource;
+    [SerializeField] private AudioClip fxJump;
+    [SerializeField] private AudioClip fxHurt;
+    [SerializeField] private AudioClip fxAttack;
+    [SerializeField] private AudioClip fxDie;
 
 
     [SerializeField] private GameObject attackCollider;
@@ -74,6 +79,7 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.LeftControl))
             {
                 playerAnimator.SetTrigger("attack");
+                gameAudioSource.PlayOneShot(fxAttack);
                 StartCoroutine(Attack());
                 nextAttackTime = Time.time + attackCoolDown;
             }
@@ -106,6 +112,7 @@ public class PlayerController : MonoBehaviour
         if (isGrounded)
         {
             playerRigidBody.velocity = new Vector2(playerRigidBody.velocity.x, 0f);
+            gameAudioSource.PlayOneShot(fxJump);
             playerRigidBody.AddForce(new Vector2(0f, jumpForce));
             isGrounded = false;
             jump = false;
@@ -169,6 +176,7 @@ public class PlayerController : MonoBehaviour
     IEnumerator PlayerDamage()
     {
         playerInvulnerability = true;
+        gameAudioSource.PlayOneShot(fxHurt);
         yield return new WaitForSeconds(0.2f);
         for (float i = 0f; i < 1f; i += 0.1f)
         {
@@ -183,6 +191,7 @@ public class PlayerController : MonoBehaviour
     IEnumerator PlayerDeath()
     {
         playerAnimator.SetTrigger("died");
+        gameAudioSource.PlayOneShot(fxDie);
         yield return new WaitForSeconds(1f);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         playerLives = 3;
