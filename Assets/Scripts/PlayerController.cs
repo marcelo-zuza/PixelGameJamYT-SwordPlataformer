@@ -47,7 +47,6 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         xAxis = Input.GetAxisRaw("Horizontal");
-        isGrounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
         playerAnimator.SetBool("isGrounded", isGrounded);
         float verticalSpeed = playerRigidBody.velocity.y;
         playerAnimator.SetFloat("verticalSpeed", verticalSpeed);
@@ -58,11 +57,12 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        isGrounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
         MovePlayer(xAxis);
-        if (jump)
-        {
-            JumpPlayer();
-        }
+        // if (jump)
+        // {
+        //     JumpPlayer();
+        // }
         SetAnimations();
     }
 
@@ -70,7 +70,8 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetButtonUp("Jump"))
         {
-            jump = true;
+            //jump = true;
+            JumpPlayer();
             playerAnimator.SetTrigger("jump");
         }
 
@@ -113,23 +114,9 @@ public class PlayerController : MonoBehaviour
         {
             playerRigidBody.velocity = new Vector2(playerRigidBody.velocity.x, 0f);
             gameAudioSource.PlayOneShot(fxJump);
-            playerRigidBody.AddForce(new Vector2(0f, jumpForce));
+            playerRigidBody.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
             isGrounded = false;
             jump = false;
-        }
-    }
-
-    void AjustColliderForCrouch(bool crouch)
-    {
-        if (crouch)
-        {
-            playerMainCollider.offset = new Vector2(playerMainCollider.offset.x, playerMainCollider.offset.y / 2);
-            playerMainCollider.size = new Vector2(playerMainCollider.size.x, playerMainCollider.size.y / 2);
-        }
-        else
-        {
-            playerMainCollider.offset = new Vector2(playerMainCollider.offset.x, playerMainCollider.offset.y * 2);
-            playerMainCollider.size = new Vector2(playerMainCollider.size.x, playerMainCollider.size.y * 2);
         }
     }
 
