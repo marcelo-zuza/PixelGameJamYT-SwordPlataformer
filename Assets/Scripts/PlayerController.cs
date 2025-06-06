@@ -59,16 +59,12 @@ public class PlayerController : MonoBehaviour
     {
         isGrounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
         MovePlayer(xAxis);
-        // if (jump)
-        // {
-        //     JumpPlayer();
-        // }
         SetAnimations();
     }
 
     void PlayerCommands()
     {
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetButtonUp("Jump"))
+        if (Input.GetButtonDown("Jump"))
         {
             //jump = true;
             JumpPlayer();
@@ -77,7 +73,7 @@ public class PlayerController : MonoBehaviour
 
         if (Time.time >= nextAttackTime)
         {
-            if (Input.GetKeyDown(KeyCode.LeftControl))
+            if (Input.GetButtonDown("Fire1"))
             {
                 playerAnimator.SetTrigger("attack");
                 gameAudioSource.PlayOneShot(fxAttack);
@@ -134,7 +130,7 @@ public class PlayerController : MonoBehaviour
         {
             if (collision.gameObject != gameObject && playerInvulnerability == false)
             {
-                if (playerLives > 0)
+                if (playerLives > 1)
                 {
                     playerAnimator.SetTrigger("hurt");
                     StartCoroutine(PlayerDamage());
@@ -146,6 +142,7 @@ public class PlayerController : MonoBehaviour
                 }
                 else
                 {
+                    playerLives -= 1;
                     StartCoroutine(PlayerDeath());
                 }
             }
